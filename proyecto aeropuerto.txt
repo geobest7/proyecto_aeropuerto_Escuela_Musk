@@ -1,0 +1,159 @@
+STRUCTURA PROYECTO AEREPORTO:
+
+proyecto/
+│
+├── entities/
+│   ├── init.py
+│   ├── aeropuerto.py
+│   ├── lector.py
+│   └── slot.py
+│
+├── data/
+│   ├── vuelos1.txt
+│   ├── vuelos2.csv
+│   └── vuelos3.json
+│
+├── tests/
+│   ├── _init.pyg
+│   ├── test_aeropuerto.py
+│   ├── test_lector.py
+│   └── test_slot.py
+│
+├── main.py
+└── __init.py
+
+-----------------------------------------------------------------------------------------------------------------
+
+- CONSTRUIR UN PROGRAMA QUE DADO UN CONJUNTO DE VUELO SEA CAPAZ DE CALCULAR LA FECHA Y
+  LA HORA DE DESPLIEGUE DE CADA UNO Y ASOCIARLE UN SLOTS.
+
+- UN SLOT CORRESPONDE CON UNA ZONA DE ESTACIONAMIENTO PARA QUE EL AVION REPOSTE Y SE
+  PROCEDA AL DESEMBARQUE Y EMBARQUE DE PASEJEROS.
+
+- DEBE LLEVAR EN TODO MOMENTO CONTROL DE LOS SLOTS DEL AEROPUERTO, SABER CUALES ESTAN DISPONIBLES,
+  Y EL TIEMPO RESTANTE PARA QUE SE LIBEREN EN CASO DE QUE ESTEN OCUPADOS
+
+- COMO ENTRADA TENEMOS QUE LEER DATOS DE 3 FICHEROS (vuelo_1.txt, vuelos_2.csv, vuelos_3.json)
+
+- UN VUELO SE CARACTERIZA POR TENER:
+     * UN id
+     * UNA fecha_de_llegada 
+     * UNOS MINUTOS DE retraso, EN CASO DE QUE NO LO HAYA SE INDICARÁ CON UN GUION
+     * EL TIPO DE VUELO QUE PUEDE SER INTERNACIONAL O NACIONAL
+     * UNA CIUDAD DE destino
+
+- TODOS LOS FICHEROS TIENEN VUELOS DISTINTOS
+
+- LA SALIDA TIENE QUE SER:"El vuelo VY1603 con fecha de llegada y despegue 2022-08-05 08:45:00,
+                           2022-08-05 10:25:00 ha sido asignado al slot 1"
+
+----------------------------------------------------------------------------------------------------------------
+¿Que tiene cada directorio y archivo?
+
+entities: En esta carpeta se encuentran los módulos relacionados con las entidades principales
+          del proyecto, como el aeropuerto, el lector y el slot. Cada archivo contiene una clase
+          o un conjunto de clases relacionadas con esa entidad.
+
+data: Aquí es donde se almacenan los datos de entrada para el proyecto, como archivos de vuelos en 
+      diferentes formatos (TXT, CSV, JSON).
+
+tests: Esta carpeta contiene todos los archivos de pruebas unitarias para tus clases. Cada archivo 
+       de prueba debe estar relacionado con el módulo correspondiente en la carpeta entities. 
+       NO LOS TIENES QUE EJECUTAR, SE LANZARAN SOLOS.
+
+main.py: Este es el punto de entrada principal de la aplicación. Aquí es donde iniciarías la aplicación,
+         importarías las clases y funciones necesarias, y ejecutaras cualquier lógica principal.
+
+
+Con esta estructura, los archivos y módulos estarían organizados de manera lógica y modular, lo que facilitaría 
+su mantenimiento y escalabilidad a medida que el proyecto crezca. Además, separar los datos, las pruebas y el 
+código principal en directorios dedicados ayuda a mantener el proyecto ordenado y estructurado. Hacerlo así en 
+las practicas de empresas y entrareis con muy buen pie!!
+
+tambien tendremos el archivo requirements.txt que contiene 
+la librerias necesaria para programar el proyecto: numpy==1.23.0
+                                                   pandas==1.4.3
+                                                   python-dateutil==2.8.2
+                                                   pytz==2022.1
+                                                   six==1.16.0
+
+------------------------------------------------------------------------------------------------------------------
+                                    ¿Que tiene que tener cada clase? 
+
+Clase Aeropuerto:
+
+      - init: El constructor inicializa el aeropuerto con un DataFrame de vuelos, el número de slots disponibles,
+              y los tiempos de embarque (nacional e internacional). También inicializa un diccionario de slots 
+              vacío y configura algunas columnas en el DataFrame de vuelos.
+
+      - calcula_fecha_despegue: Este método debe implementarse para calcular la fecha de despegue de un vuelo en 
+                                función de la disponibilidad de slots y otros factores.
+
+      - encuentra_slot: Debe implementarse para encontrar un slot disponible para un vuelo en particular.
+      
+      - asigna_slot: Asigna un slot a un vuelo en particular.
+
+      - asigna_slots: Debe implementarse para asignar slots a todos los vuelos del DataFrame.
+
+Clase Lector:
+
+      - init: Inicializa la clase con una ruta de archivo.Tiene un solo atributo.
+
+      - _comprueba_extension: Metodo privado. Verifica quela extensión del archivo a leer sea
+                              la misma que la extension pasada por parametro. Esto nos 
+                              permitirá comprobar que la extension del archivo es corecta.
+
+      - lee_archivo: Método genérico para leer el archivo.
+
+      - convierte_dict_a_csv: Método estático para convertir un diccionario a un archivo CSV.
+
+Clases LectorCSV, LectorJSON, LectorTXT (heredadas de Lector)*:
+
+      - init: Constructor específico para cada tipo de archivo.
+
+      - lee_archivo: Implementación específica de lectura de cada tipo de archivo.
+
+Clase Slot:
+
+      - init: Inicializa un slot con un identificador y fechas inicial y final.
+
+      - asigna_vuelo: Puede implementarse para asignar un vuelo a este slot.
+
+      - slot_esta_libre_fecha_determinada: Verifica si el slot está libre en una fecha específica.
+----------------------------------------------------------------------
+SEGUNDA MANERA DE HACER ESTA CLASE:
+   def slot_esta_libre_fecha_determinada(self, fecha):
+        if self.fecha_inicial is None or self.fecha_final is None:
+            return 0
+        elif self.fecha_inicial <= fecha <= self.fecha_final:
+            return self.fecha_final - fecha
+        return 0
+---------------------------------------------------------------------
+      * Función preprocess_data:
+ 
+                   Esta función podría implementarse para realizar cualquier procesamiento 
+                   previo necesario en los datos antes de utilizarlos, como limpieza de datos, 
+                   conversión de formatos, etc. 
+-------------------------------------------------------------------------------------------------------------
+
+
+Otra pregunta suele ser como empezar, te sugiero un orden posible para desarrollar las clases en tu proyecto:
+
+Clase Slot:
+
+Comenzar con la clase Slot puede ser beneficioso, ya que es una parte fundamental de la asignación de vuelos 
+en el aeropuerto. Desarrollar esta clase te permitirá establecer cómo representar los slots de tiempo en el 
+aeropuerto y cómo interactuar con ellos.
+
+Clase Lector y sus subclases (LectorCSV, LectorJSON, LectorTXT):
+
+Una vez que tengas una idea clara de cómo representar los datos de los vuelos en los slots, puedes pasar al 
+desarrollo del módulo de lectura de archivos. Comienza con la clase base Lector, definiendo cómo leer archivos 
+genéricos y luego desarrolla las subclases para leer archivos específicos en formatos como CSV, JSON y TXT.
+
+Clase Aeropuerto:
+
+Después de haber establecido cómo representar los slots de tiempo y cómo leer los datos de los vuelos desde 
+archivos, puedes desarrollar la clase Aeropuerto. Esta clase integrará la funcionalidad de asignación de vuelos
+ a slots y la gestión general de los vuelos en el aeropuerto
+-----------------------------------------------------------------------------------------------------------------
